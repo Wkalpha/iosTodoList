@@ -6,5 +6,5 @@ target 'iosTodoList' do
   use_frameworks!
 
   # Pods for iosTodoList
-
+  pod 'SQLite.swift', '~> 0.11.5'
 end
