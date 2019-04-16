@@ -11,8 +11,9 @@ import UIKit
 class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var textField: UITextField!
+    
     @IBAction func addBtn(_ sender: UIButton) {
-        // Check text if empty return 0 and do nothing
+        // Check text if empty pop up alert window and return 0 do nothing
         if(textField.text == ""){
             checkData()
             return
