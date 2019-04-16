@@ -52,9 +52,9 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     // The app startup view
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         tableView.dataSource = self
         tableView.delegate = self
-        // Do any additional setup after loading the view.
     }
 
 
