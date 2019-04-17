@@ -10,8 +10,71 @@ import UIKit
 import SQLite
 
 class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+    
+    
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var textField: UITextField!
+    @IBOutlet weak var editBtnOutlet: UIButton!
+    
+    
+    var flag = 0
+    @IBAction func editBtn(_ sender: Any, forEvent event: UIEvent) {
+        if flag != 1{
+            editBtnOutlet.setTitle("Done", for: .normal)
+            flag = 1
+        }else{
+            editBtnOutlet.setTitle("Edit", for: .normal)
+            flag = 0
+        }
+        tableView.isEditing = !tableView.isEditing
+    }
+    
+    
+    @IBAction func deleteBtn(_ sender: Any) {
+        if let selectedRows = tableView.indexPathsForSelectedRows {
+            // The selected rows are added to a temporary array
+            var items = [String]()
+            for indexPath in selectedRows  {
+                items.append(myTask[indexPath.row])
+            }
+            // The index of the items of the temporary array will be used to remove the items of the numbers array
+            // And delete from SQLite where text same as select
+            for item in items {
+                if let index = myTask.index(of: item) {
+                    let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+                    let db = try? Connection("\(path)/todo.sqlite")
+                    let main = Table("main")
+                    let text = Expression<String>("text")
+                    let m = main.filter(text == myTask[index])
+                    myTask.remove(at: index)
+                    try? db?.run(m.delete())
+                }
+            }
+            // The selected rows will be deleted from the table view
+            tableView.beginUpdates()
+            tableView.deleteRows(at: selectedRows, with: .automatic)
+            tableView.endUpdates()
+        }
+    }
+    
+    // slide and delete
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        switch editingStyle{
+        case UITableViewCell.EditingStyle.delete :
+            let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+            let db = try? Connection("\(path)/todo.sqlite")
+            let main = Table("main")
+            let text = Expression<String>("text")
+            let m = main.filter(text == myTask[indexPath.row])
+            myTask.remove(at: indexPath.row)
+            try? db?.run(m.delete())
+            tableView.beginUpdates()
+            tableView.deleteRows(at: [indexPath], with: .automatic)
+            tableView.endUpdates()
+        default :
+            break
+        }
+    }
     
     var myTask:[String] = []
     @IBAction func addBtn(_ sender: UIButton) {
@@ -106,6 +169,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         }catch{
             print(error)
         }
+        tableView.allowsMultipleSelectionDuringEditing = true
     }
 
 

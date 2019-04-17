@@ -85,7 +85,6 @@
 				50991A187474BFE405596E2F /* Pods-iosTodoList.debug.xcconfig */,
 				A1AE1D24A89D16F31CD6672D /* Pods-iosTodoList.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
