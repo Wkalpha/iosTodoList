@@ -97,28 +97,64 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             try! db?.run(main.create(ifNotExists: true,block:{(table) in
                 table.column(id, primaryKey: true)
                 table.column(text)}))
-            
-            do {
-                let rowid = try db?.run(main.insert(text <- textField.text!))
-                myTask = []
-                for toDoList  in (try? db?.prepare(main))!! {
-                    myTask.append("\(toDoList[text])")
+            if checkData(textField.text!) == textField.text!{
+                doubleData()
+                return
+            }else{
+                do {
+                    let rowid = try db?.run(main.insert(text <- textField.text!))
+                    myTask = []
+                    for toDoList  in (try? db?.prepare(main))!! {
+                        myTask.append("\(toDoList[text])")
+                    }
+                    print("inserted id: \(rowid!)")
+                } catch {
+                    print("insertion failed: \(error)")
                 }
-                print("inserted id: \(rowid!)")
-            } catch {
-                print("insertion failed: \(error)")
             }
+//            print(checkData(textField.text!))
+            
             
         }catch{
             print(error)
         }
         
-        tableView.reloadData()
+        tableView.beginUpdates()
+        tableView.insertRows(at: [[0,myTask.count - 1]], with: UITableView.RowAnimation.fade) // insert animation
+        tableView.endUpdates()
+        
+        // Scroll to newest data
+        tableView.scrollToRow(at: [0,myTask.count - 1], at: UITableView.ScrollPosition.bottom, animated: true)
         
         // Clean text
         textField.text = ""
     }
+    // check text exist or not
+    func checkData(_ text :String) -> String{
+        var checkText = ""
+        let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+        let db = try? Connection("\(path)/todo.sqlite")
+        
+        let main = Table("main")
+        let text = Expression<String>("text")
+        
+        let filter1 = main.filter(text == textField.text!)
+        for result in (try? db?.prepare(filter1))!!{
+            checkText = result[text]
+        }
+        return checkText
+    }
     
+    // alert when data already exist
+    func doubleData() {
+        let alertController = UIAlertController(title: "Data already exist!", message: "", preferredStyle: UIAlertController.Style.alert)
+        let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.cancel, handler: nil)
+        alertController.addAction(okAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    // alert when text is empty
     func showAlert() {
         let alertController = UIAlertController(title: "Text can't be empty", message: "", preferredStyle: UIAlertController.Style.alert)
         let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.cancel, handler: nil)
