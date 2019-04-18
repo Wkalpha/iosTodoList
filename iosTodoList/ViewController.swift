@@ -206,12 +206,17 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             print(error)
         }
         tableView.allowsMultipleSelectionDuringEditing = true
+        
+        // keyboard need
         self.textField.delegate = self
     }
+    
+    // when press return keyboard will hide
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
     }
+    // when touch anywhere keyboard will hide
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
     }
