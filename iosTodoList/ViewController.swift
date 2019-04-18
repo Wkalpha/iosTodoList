@@ -9,7 +9,7 @@
 import UIKit
 import SQLite
 
-class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate {
     
     
     @IBOutlet weak var tableView: UITableView!
@@ -206,8 +206,15 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             print(error)
         }
         tableView.allowsMultipleSelectionDuringEditing = true
+        self.textField.delegate = self
     }
-
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
+    }
 
 }
 
